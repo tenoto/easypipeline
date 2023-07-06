@@ -25,14 +25,16 @@ Run pipeline process.
 		help='input file directory path')
 	parser.add_argument('--outdir', '-o', type=str, required=True, 
 		help='output file directory path')
+	parser.add_argument('--flag_realtime_open', action='store_true')	
 	return parser
 
 def main(args=None):
 	parser = get_parser()
 	args = parser.parse_args(args) # get arguments 
 
-	pipe = pipeline.PipelineTable(args.name,args.column,args.param,args.indir,args.outdir)
-	pipe.run_pipeline()
+	pipe = pipeline.PipelineTable(args.name,args.column,args.param,
+		args.indir,args.outdir)
+	pipe.run_pipeline(args.flag_realtime_open)
 
 if __name__=="__main__":
 	main()

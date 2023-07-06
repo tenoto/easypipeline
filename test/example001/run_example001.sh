@@ -8,7 +8,8 @@ run_pipeline.py \
 	--param input/parameter/input_parameter.yaml \
 	--column input/parameter/def_columns.yaml \
 	--indir input/data \
-	--outdir output 
+	--outdir output \
+	--flag_realtime_open 
 
 cd $TMP_PATH
 

@@ -1,5 +1,7 @@
-filename: []
-DetID: []
-filepath: []
-date: []
-qlplot: []
+Filename: {'format':'16A','unit':''}
+Status: {'format':'4A','unit':''}
+Filepath: {'format':'27A','unit':''}
+DetID: {'format':'K','unit':''}
+Date: {'format':'10A','unit':'JST'}
+Interval: {'format':'K','unit':'s'}
+QLcurve: {'format':'75A','unit':''}
