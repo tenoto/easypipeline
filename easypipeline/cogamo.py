@@ -95,6 +95,19 @@ class HKData():
 		tmp_time_series_utc = tmp_time_series_jst - timedelta(hours=+9)		
 		self.df['unixtime'] = tmp_time_series_utc.to_value('unix',subfmt='decimal')
 		self.df['unixtime'] = self.df['unixtime'].astype(np.float64)
+		self.df['jst'] = tmp_time_series_jst
+
+	def set_outdir(self,outdir_root,flag_overwrite=True):
+		self.outdir_root = outdir_root
+		self.outdir = '%s/data/%s' % (self.outdir_root, self.basename)
+
+		if flag_overwrite:
+			cmd = 'rm -rf %s' % self.outdir
+			print(cmd);os.system(cmd)
+
+		if not os.path.exists(self.outdir):
+			cmd = 'mkdir -p %s' % self.outdir
+			print(cmd);os.system(cmd)
 
 	def plot(self,outpdf,tstart=None,tstop=None,ylog=0):
 		sys.stdout.write('----- {} -----\n'.format(sys._getframe().f_code.co_name))		
@@ -204,8 +217,18 @@ class HKData():
 		plt.savefig(outpdf)		
 
 	def run(self,piptable,index):
-		outpdf = '%s.pdf' % self.basename
-		self.plot(outpdf=outpdf)
+		self.set_outdir(piptable.outdir)
 
-		piptable.iloc[index]['lcpdflink'] = '<a href=\"../%s\">pha_spec</a>' % outpdf
-		piptable.iloc[index]['lcpdf'] = outpdf		
+		### add basic information to the table 
+		piptable.df.iloc[index]['DetID'] = self.detid_str
+		piptable.df.iloc[index]['Interval'] = self.df['interval'][0]
+		piptable.df.iloc[index]['Date'] = str(self.df['jst'][0])[0:10]
+
+		### add quick look (QL) curve plot
+		qlplot_fname = '%s.pdf' % self.basename
+		qlplot_path = '%s/%s.pdf' % (self.outdir,self.basename)		
+		self.plot(outpdf=qlplot_path)
+		piptable.df.iloc[index]['qlplot'] = '<a href=\"../%s\">%s</a>' % (qlplot_path,qlplot_fname)
+
+
+

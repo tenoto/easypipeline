@@ -43,9 +43,9 @@ class PipelineTable(object):
 		self.table_basename = '%s/%s' % (self.outdir,self.name)
 		self.table_csvpath = '%s.csv' % self.table_basename
 		self.table_htmlpath = '%s.html'	% self.table_basename
-		self.write_to_table()
+		self.write()
 
-	def write_to_table(self,overwrite=True):
+	def write(self,overwrite=True):
 		if overwrite:
 			cmd = 'rm -f %s %s' % (self.table_csvpath,self.table_htmlpath)
 			os.system(cmd);#print(cmd);
@@ -58,7 +58,13 @@ class PipelineTable(object):
 		for index in range(len(self.df)):
 			print(self.df.iloc[index])
 
-			cgmhkfile = cogamo.HKData(self.df.iloc[index]['filepath'])
-			cgmhkfile.run(self.df,index)
-			self.write_to_table()
+			try:
+				cgmhkfile = cogamo.HKData(self.df.iloc[index]['filepath'])
+				cgmhkfile.run(self,index)
+			except Exception as e:
+				#sys.stderr.write(e.args)
+				print(e)
+			finally:
+				sys.stdout.write("finally")
+				self.write()
 
