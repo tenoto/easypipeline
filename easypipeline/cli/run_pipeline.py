@@ -31,8 +31,8 @@ def main(args=None):
 	parser = get_parser()
 	args = parser.parse_args(args) # get arguments 
 
-	pipe = pipeline.Pipeline(args.name,args.column,args.param,args.indir,args.outdir)
-	pipe.run()
+	pipe = pipeline.PipelineTable(args.name,args.column,args.param,args.indir,args.outdir)
+	pipe.run_pipeline()
 
 if __name__=="__main__":
 	main()
