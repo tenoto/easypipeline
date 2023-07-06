@@ -50,6 +50,8 @@ test/example001/run_example001.sh
 ```
 すると、勝手にウェブブラウザが表示されてパイプライン解析の結果を示す表が表示され、実行されると "Status" のコラムに Done という緑背景の文字がリアルタイムに表示、更新されていくはずである。これがやりたかったこと。
 
+<img width="723" alt="スクリーンショット 2023-07-06 15 52 00" src="https://github.com/tenoto/easypipeline/assets/9628581/f0e06094-fc0e-49bd-869a-3cbe9615b702">
+
 
 
 ## 編集履歴
