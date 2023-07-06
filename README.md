@@ -115,22 +115,21 @@ easypipeline/cli/convert_csv2fits.py test/example001/output/easypipeline.csv --c
 なので、ユーザーはこの形式をコピーした後、 cogamo.py に相当するような、自分が処理したい対象のデータを扱うモジュール（クラス）を作成して、個々の処理をその中で定義し、pipeline.py の中の run_pipeline の関数で定義している、以下の箇所を、cogamo.py から呼び出して書き直せば、同様の枠組みを作ることができる。
 
 ```
-			#### BEGIN: User can modify this ####
-			status = '--'
-			try:
-				cgmhkfile = cogamo.HKData(self.df.iloc[index]['Filepath'])
-				cgmhkfile.run(self,index)	
-			except Exception as e:
-				status = 'Error'
-			else:
-				status = 'Done'
-			finally:
-				sys.stdout.write('-- status: {}\n'.format(status))
-				self.df.iloc[index]['Status'] = status 
-				self.write()
-				if flag_realtime_open: os.system('open %s ' % self.table_htmlpath)
-			#### END: User can modify this ####				
-
+#### BEGIN: User can modify this ####
+status = '--'
+try:
+	cgmhkfile = cogamo.HKData(self.df.iloc[index]['Filepath'])
+	cgmhkfile.run(self,index)	
+except Exception as e:
+	status = 'Error'
+else:
+	status = 'Done'
+finally:
+	sys.stdout.write('-- status: {}\n'.format(status))
+	self.df.iloc[index]['Status'] = status 
+	self.write()
+	if flag_realtime_open: os.system('open %s ' % self.table_htmlpath)
+#### END: User can modify this ####				
 ```
 
 ## 各コードの役割
