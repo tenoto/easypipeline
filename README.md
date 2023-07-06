@@ -112,11 +112,37 @@ easypipeline/cli/convert_csv2fits.py test/example001/output/easypipeline.csv --c
 
 今回、表を作ったり、ループ処理を回す場所は、pipeline.py の中の PipelineTable というクラスで、run_pipeline という関数に担わせた。このループ処理の個別の解析は、cogamo.py の中の HKData というクラスの中で定義している。この HKData クラスの個々の関数に個別の処理を行わせ、それをまとめたものが、run という関数である。
 
+なので、ユーザーはこの形式をコピーした後、 cogamo.py に相当するような、自分が処理したい対象のデータを扱うモジュール（クラス）を作成して、個々の処理をその中で定義し、pipeline.py の中の run_pipeline の関数で定義している、以下の箇所を、cogamo.py から呼び出して書き直せば、同様の枠組みを作ることができる。
+
+```
+			#### BEGIN: User can modify this ####
+			status = '--'
+			try:
+				cgmhkfile = cogamo.HKData(self.df.iloc[index]['Filepath'])
+				cgmhkfile.run(self,index)	
+			except Exception as e:
+				status = 'Error'
+			else:
+				status = 'Done'
+			finally:
+				sys.stdout.write('-- status: {}\n'.format(status))
+				self.df.iloc[index]['Status'] = status 
+				self.write()
+				if flag_realtime_open: os.system('open %s ' % self.table_htmlpath)
+			#### END: User can modify this ####				
+
+```
+
+## 各コードの役割
+easypipeline の下には、メインになるプログラム群が入っている。この中で、cli はコマンドラインで呼び出すスクリプトなので、基本はこの cli 下のコードを呼び出して解析をする。たとえば、cli/run_pipeline.py では、argparse モジュールを使って引数処理をした後、easypipeline/pipeline.py を呼び出して実行している。なので、本体は、easypipeline/pipeline.py の中に記載されており、これがループ処理・パイプライン処理の大枠を決めている。
+
+## ユーザーさんへ
+なので、コードの中身をざっと読んで枠組みを理解して、適宜、改造して使ってみてほしい。合わせて、オブジェクト指向的な書き方に慣れているのも目的としている。なお、このコードは合間時間に試験的に初心者が書いたものなので、あまり信用しすぎないように。
 
 ## 宿題
-
 以下の点はこれから実装する。
 - エラーが出たときのログを各ファイルに保存する。
+- 例外処理はまだ不十分なのだろうから、改訂する。
 - xspec でフィットする例を作成する。
 
 
