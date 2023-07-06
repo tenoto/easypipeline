@@ -37,7 +37,7 @@ easypipeline
         └── run_example001.sh (テストコードを実行するスクリプト)
 ```
 
-まず、以下のおまじないをする。これで、CLI の下に格納されているスクリプト(run_pipeline.py,convert_csv2fits.py)などを、別階層のディレクトリからでも PATH が通っているので、読めるようになる。
+まず、以下のおまじないをする。これで、CLI の下に格納されているスクリプト(run_pipeline.py,convert_csv2fits.py)などを、別階層のディレクトリからでも PATH が通っているので、呼べるようになる。
 ```
 source setenv/setenv.bashrc
 ```
@@ -48,11 +48,77 @@ source setenv/setenv.bashrc
 ```
 test/example001/run_example001.sh 
 ```
-すると、勝手にウェブブラウザが表示されてパイプライン解析の結果を示す表が表示され、実行されると "Status" のコラムに Done という緑背景の文字がリアルタイムに表示、更新されていくはずである。これがやりたかったこと。
+すると、勝手にウェブブラウザが表示されてパイプライン解析の結果を示す表が表示され、実行されると "Status" のコラムに Done という緑背景の文字がリアルタイムに表示、更新されていくはずである。下の画像みたいな感じ。
 
 <img width="723" alt="スクリーンショット 2023-07-06 15 52 00" src="https://github.com/tenoto/easypipeline/assets/9628581/f0e06094-fc0e-49bd-869a-3cbe9615b702">
 
+ここで、"QLcurve" のコラムのリンクをクリックすると、作成された pdf ファイルを画面上に表示することができる。
+
+スクリプトを実施すると、
+
+```
+=== Pipeline: easypipeline generated === 
+mkdir -p output/data
+Pipeline run_pipeline: #_of_rows = 4  
+-- 0/4 process started.
+-- HKData 012_20210108: init input/data/012_20210108.csv
+-- HKData 012_20210108: set_time_series
+-- HKData 012_20210108: run
+-- HKData 012_20210108: set_outdir
+-- HKData 012_20210108: plot_qlcurves
+-- status: Done
+-- 1/4 process started.
+-- HKData 016_20210108: init input/data/016_20210108.csv
+-- HKData 016_20210108: set_time_series
+-- HKData 016_20210108: run
+-- HKData 016_20210108: set_outdir
+-- HKData 016_20210108: plot_qlcurves
+-- status: Done
+-- 2/4 process started.
+-- HKData 017_20210204: init input/data/017_20210204.csv
+-- HKData 017_20210204: set_time_series
+-- HKData 017_20210204: run
+-- HKData 017_20210204: set_outdir
+-- HKData 017_20210204: plot_qlcurves
+-- status: Done
+-- 3/4 process started.
+-- HKData 028_20210102: init input/data/028_20210102.csv
+-- HKData 028_20210102: set_time_series
+-- HKData 028_20210102: run
+-- HKData 028_20210102: set_outdir
+-- HKData 028_20210102: plot_qlcurves
+-- status: Done
+```
+みたいな表示が出て、実施状況はコマンドプロンプトでも確認できるようになっている。	
+
+この段階で、test/example001/output/ の下には、同じ内容で２つの形式のファイルが生成されている。
+
+- easypipeline.html (上で表示している HTML 形式のファイル)
+- easypipeline.csv (CSV 形式の表、pandas などで読むことができる)
+
+さらに、
+```
+easypipeline/cli/convert_csv2fits.py test/example001/output/easypipeline.csv --column test/example001/input/parameter/def_columns.yaml
+```
+を実行すると、
+
+- easypipeline.fits (fits 形式のファイルなので、HEASoft の fv や他のコマンドで扱える)
+
+も同じディレクトリに作成される。
+
+## 何が便利か？
+
+たくさんのデータを解析すると、個々の解析結果を細かく見ていきたい要求と、全体の結果を一覧性よく確認したり、相互の相関を取ったりしたくなる。また、パイプライン処理の実施状況を確認したり、途中で何らかのエラーで失敗したものを飛ばしながら、他は先に進めて、後でバグ取りをしたいときなどに使えると思う。
+
+今回、表を作ったり、ループ処理を回す場所は、pipeline.py の中の PipelineTable というクラスで、run_pipeline という関数に担わせた。このループ処理の個別の解析は、cogamo.py の中の HKData というクラスの中で定義している。この HKData クラスの個々の関数に個別の処理を行わせ、それをまとめたものが、run という関数である。
+
+
+## 宿題
+
+以下の点はこれから実装する。
+- エラーが出たときのログを各ファイルに保存する。
+- xspec でフィットする例を作成する。
 
 
 ## 編集履歴
-2023-07-06 version 1, 榎戸輝揚
+2023-07-06 version 1, 榎戸輝揚, 基本的な枠組みを作成した。CR大学院生のために公開。
